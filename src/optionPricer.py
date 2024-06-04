@@ -31,10 +31,15 @@ class OptionPricer:
         # Set the pricing engine
         self.europeanOption.setPricingEngine(ql.AnalyticEuropeanEngine(self.bsmProcess))
 
-    def getOptionValue(self, newSpotPrice):
-        # Update the spot price
-        self.spotHandle = ql.QuoteHandle(ql.SimpleQuote(newSpotPrice))
+    def refreshOption(self):
+        self.bsmProcess = ql.BlackScholesMertonProcess(self.spotHandle, self.dividendHandle, self.rateHandle, self.volHandle)
+        self.europeanOption.setPricingEngine(ql.AnalyticEuropeanEngine(self.bsmProcess))
+
+
+    def getOptionValue(self, newPrice):
         # Calculate and return the option price
+        self.spotHandle = ql.QuoteHandle(ql.SimpleQuote(newPrice))
+        self.refreshOption()
         return self.europeanOption.NPV()
 
     def getImpliedVolatility(self, marketPrice):
@@ -55,10 +60,3 @@ class OptionPricer:
     def getRho(self):
    		return self.europeanOption.rho()
 
-
-optionPricer = OptionPricer(0.9, 1, 0.01, 0, 3.2, 5, "call")
-print(optionPricer.getOptionValue(0.8))
-
-# Example usage:
-# print(calculate_option_value(100, 105, 0.01, 0.02, 0.25, 1, 'call'))
-# print(calculate_implied_volatility_and_greeks(100, 105, 0.01, 0.02, 1, 'call', 10))

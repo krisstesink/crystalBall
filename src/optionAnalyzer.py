@@ -1,15 +1,13 @@
 from optionPricer import OptionPricer
 from scipy import stats
 
-option = OptionPricer(0.9, 1, 0.01, 0, 3.2, 5, "call")
+
 
 class NormalAnalyzer:
-	def __init__(self, option, targetPrice, standardDev, samples):
+	def __init__(self, option, targetPrice):
 		#Set up class attributes
 		self.option = option
 		self.targetPrice = targetPrice
-		self.standardDev = standardDev
-		originalPrice = option.europeanOption.NPV()
 
 		#Sample from a normal distribution around the price target
 		normDist = stats.norm(loc = targetPrice, scale = standardDev)
@@ -22,11 +20,19 @@ class NormalAnalyzer:
 			optionValue = option.getOptionValue(price)
 			self.optionValues.append(optionValue)
 
-		#Return option to its original price
-		self.option.getOptionValue(originalPrice)
+
+	def getMean(self):
+		return sum(self.optionValues)/len(self.optionValues)
+
+	
 
 
 		
+option = OptionPricer(0.9, 1, 0.01, 0, 3.2, 10, "call")
+for i in range(10):
+	option.updateParams(timeToValuation = i)
+	print("npv = ", option.europeanOption.NPV())
+	print("theta = ", option.getTheta())
 
-na = NormalAnalyzer(option, 1.1, 0.1, 500)
+
 

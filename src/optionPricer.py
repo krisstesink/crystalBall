@@ -1,10 +1,11 @@
 import QuantLib as ql
 
-class OptionPricer:
+class Option:
     def __init__(self, underlyingPrice, strikePrice, riskFreeRate, dividendYield, volatility, timeToMaturity, optionType):
         self.originalPrice = underlyingPrice
         self.originalTimeToMaturity = timeToMaturity
         self.originalVolatility = volatility
+        self.optionType = optionType
 		# Set up QuantLib dates
         self.calendar = ql.UnitedStates(ql.UnitedStates.NYSE)
         self.valuationDate = ql.Date.todaysDate()
@@ -56,6 +57,7 @@ class OptionPricer:
     def updateParams(self, underlyingPrice=False, timeToValuation=False, newVolatility=False):
         # Check each param and update values if needed
         if(underlyingPrice!=False):
+            print("underlying = ", underlyingPrice)
             self.spotHandle = ql.QuoteHandle(ql.SimpleQuote(underlyingPrice))
 
         if(timeToValuation!=False):
